@@ -1,0 +1,9 @@
+.env
+.env.local
+.env.*.local
+pacman.db
+pacman.db-shm
+pacman.db-wal
+node_modules/
+dist/
+build/

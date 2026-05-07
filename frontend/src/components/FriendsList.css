@@ -1,0 +1,304 @@
+/* ============================================
+   FRIENDS LIST
+   ============================================ */
+
+.friends-list {
+  padding: 0;
+}
+
+.friends-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.friends-header h2 {
+  font-size: clamp(24px, 4vw, 32px);
+  color: var(--accent-pink);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow:
+    3px 3px 0 rgba(0, 229, 255, 0.34),
+    0 0 16px rgba(255, 47, 135, 0.24);
+}
+
+.add-friend-section,
+.invites-section,
+.friends-section {
+  background: var(--surface);
+  border: 2px solid var(--border-subtle);
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-subtle);
+  position: relative;
+  overflow: hidden;
+}
+
+.add-friend-section::before,
+.invites-section::before,
+.friends-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 6px 6px 0 0;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.add-friend-section::before {
+  background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+}
+
+.invites-section::before {
+  background: linear-gradient(90deg, var(--accent-amber), var(--accent-pink));
+}
+
+.friends-section::before {
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-amber));
+}
+
+.add-friend-section {
+  border-color: rgba(127, 189, 136, 0.22);
+}
+
+.invites-section {
+  border-color: rgba(216, 180, 95, 0.22);
+}
+
+.friends-section {
+  border-color: rgba(127, 183, 215, 0.22);
+}
+
+.add-friend-section h3,
+.invites-section h3,
+.friends-section h3 {
+  margin-bottom: 16px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.add-friend-section h3 {
+  color: var(--accent-green);
+}
+
+.invites-section h3 {
+  color: var(--accent-amber);
+}
+
+.friends-section h3 {
+  color: var(--accent-blue-strong);
+}
+
+.add-friend-form {
+  display: flex;
+  width: min(100%, 860px);
+  margin: 0 auto;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-friend-form input {
+  flex: 1 1 520px;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 14px;
+  height: 50px;
+  background: rgba(4, 8, 16, 0.56);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  border-radius: 7px;
+  font-size: 15px;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.add-friend-form input:focus {
+  outline: none;
+  border-color: rgba(127, 189, 136, 0.5);
+  background: rgba(6, 11, 22, 0.82);
+}
+
+.add-friend-form input::placeholder {
+  color: var(--text-muted);
+}
+
+.add-friend-btn,
+.accept-btn,
+.invite-play-btn {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(127, 189, 136, 0.42);
+  color: var(--accent-green);
+  font-family: var(--font-arcade);
+  cursor: pointer;
+  border-radius: 7px;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.add-friend-btn {
+  flex: 0 0 auto;
+  min-width: 200px;
+  padding: 12px 20px;
+  height: 50px;
+  font-size: 24px;
+  box-shadow: 4px 4px 0 rgba(0, 255, 102, 0.18);
+}
+
+.add-friend-btn:hover,
+.accept-btn:hover {
+  background: rgba(127, 189, 136, 0.12);
+  border-color: rgba(127, 189, 136, 0.62);
+  color: var(--text-primary);
+}
+
+.invites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.invite-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  gap: 12px;
+}
+
+.invite-item span {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.accept-btn {
+  padding: 8px 15px;
+  height: 36px;
+  font-size: 22px;
+}
+
+.no-friends {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  grid-auto-flow: dense;
+}
+
+.friend-card {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--border-subtle);
+  padding: 18px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 132px;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.friend-card:hover {
+  border-color: rgba(127, 183, 215, 0.32);
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: var(--shadow-subtle);
+}
+
+.friend-avatar {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  background: rgba(127, 183, 215, 0.16);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--accent-blue-strong);
+  border: 1px solid rgba(127, 183, 215, 0.36);
+}
+
+.friend-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.friend-info h4 {
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.friend-info p {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 13px;
+}
+
+.invite-play-btn {
+  padding: 8px 14px;
+  height: 36px;
+  border-color: rgba(216, 180, 95, 0.42);
+  color: var(--accent-amber);
+  font-size: 22px;
+}
+
+.invite-play-btn:hover {
+  background: rgba(216, 180, 95, 0.12);
+  border-color: rgba(216, 180, 95, 0.62);
+  color: var(--text-primary);
+}
+
+@media (max-width: 767px) {
+  .friends-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .friend-card {
+    min-height: auto;
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+
+  .add-friend-form {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .add-friend-form input,
+  .add-friend-btn {
+    flex-basis: auto;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .invite-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Pac-Man Arcade">
+  <rect width="180" height="180" rx="28" fill="#0a0e27" />
+  <path d="M95 26c-34.24 0-62 27.76-62 62s27.76 62 62 62c15.79 0 30.2-5.93 41.14-15.69L95 88l41.14-46.31A61.78 61.78 0 0 0 95 26z" fill="#ffc700" />
+  <circle cx="78" cy="56" r="7" fill="#0a0e27" />
+  <circle cx="141" cy="56" r="9" fill="#00d9ff" />
+  <circle cx="153" cy="77" r="7" fill="#00d9ff" />
+  <circle cx="144" cy="98" r="6" fill="#00d9ff" />
+</svg>
