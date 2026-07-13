@@ -451,21 +451,25 @@ app.post('/api/auth/login', loginLimiter, (req, res) => {
   });
 });
 
+// Shared JWT verification: returns decoded payload or null (guest/invalid/missing)
+function verifyJwt(token) {
+  if (!token || token === 'guest-session') return null;
+  try {
+    return jwt.verify(token, ACTIVE_JWT_SECRET);
+  } catch {
+    return null;
+  }
+}
+
 // Middleware to verify token
 function verifyToken(req, res, next) {
   const token = req.headers['authorization']?.split(' ')[1];
-  
-  if (!token) {
-    return res.status(401).json({ error: 'No token' });
+  const decoded = verifyJwt(token);
+  if (!decoded) {
+    return res.status(401).json({ error: token ? 'Invalid token' : 'No token' });
   }
-
-  jwt.verify(token, ACTIVE_JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ error: 'Invalid token' });
-    }
-    req.user = decoded;
-    next();
-  });
+  req.user = decoded;
+  next();
 }
 
 app.get('/api/auth/me', verifyToken, (req, res) => {
@@ -475,17 +479,7 @@ app.get('/api/auth/me', verifyToken, (req, res) => {
 });
 
 function getSessionCreator(req) {
-  const token = req.headers['authorization']?.split(' ')[1];
-
-  if (!token || token === 'guest-session') {
-    return null;
-  }
-
-  try {
-    return jwt.verify(token, ACTIVE_JWT_SECRET);
-  } catch (err) {
-    return null;
-  }
+  return verifyJwt(req.headers['authorization']?.split(' ')[1]);
 }
 
 // Game Stats Routes

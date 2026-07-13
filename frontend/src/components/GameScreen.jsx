@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import './GameScreen.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+import { API_URL } from '../config'
 
 const BOARD_WIDTH = 19
 const BOARD_HEIGHT = 21
 const START_POSITION = { x: 9, y: 15 }
 
-// Per-ghost speed variation (ms) — adds life to ghost movement
+// Per-ghost speed variation (ms) - adds life to ghost movement
 const GHOST_SPEEDS = {
   blinky: 330,  // aggressive
   pinky: 360,   // balanced
@@ -208,9 +208,10 @@ function GameScreen({
   const [multiplayerStatus, setMultiplayerStatus] = useState(isMultiplayer ? 'Connecting...' : 'Solo')
   const [isMultiplayerReady, setIsMultiplayerReady] = useState(!isMultiplayer)
   const [isHost, setIsHost] = useState(!isMultiplayer)
-  const startingDots = useMemo(() => countDots(initialBoard), [])
+  const startingDots = countDots(initialBoard)
   const [dotsRemaining, setDotsRemaining] = useState(startingDots)
   const startTimeRef = useRef(Date.now())
+  const [elapsed, setElapsed] = useState(0)
 
   const wsRef = useRef(null)
   const pacmanPosRef = useRef(pacmanPos)
@@ -266,7 +267,7 @@ function GameScreen({
       }
 
       if (data.type === 'dot_eaten') {
-        // Other player ate a dot — update our board
+      // Other player ate a dot - update our board
         const { x: dotX, y: dotY } = data
         setBoard(currentBoard => {
           if (currentBoard[dotY]?.[dotX] === 0) {
@@ -295,7 +296,7 @@ function GameScreen({
         setIsHost(amHost)
         isHostRef.current = amHost
         setIsMultiplayerReady(true)
-        setMultiplayerStatus(amHost ? 'Host — Multiplayer active' : 'Guest — Multiplayer active')
+        setMultiplayerStatus(amHost ? 'Host - Multiplayer active' : 'Guest - Multiplayer active')
         // Send initial position so the opponent can render us before the first move
         if (socket.readyState === WebSocket.OPEN) {
           const pos = pacmanPosRef.current
@@ -510,6 +511,15 @@ function GameScreen({
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [movePacman])
 
+  // Live elapsed clock (real units, ticks every second).
+  useEffect(() => {
+    if (gameOver || gameWon) return undefined
+    const id = window.setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000))
+    }, 1000)
+    return () => window.clearInterval(id)
+  }, [gameOver, gameWon])
+
   // Persist stats once per game on win/loss for authenticated users
   const statsPostedRef = useRef(false)
   useEffect(() => {
@@ -543,9 +553,16 @@ function GameScreen({
     setGameOver(false)
     setGameWon(false)
     setDotsRemaining(startingDots)
+    setElapsed(0)
     queuedDirection.current = null
     startTimeRef.current = Date.now()
     statsPostedRef.current = false
+  }
+
+  const formatClock = (total) => {
+    const m = Math.floor(total / 60)
+    const s = total % 60
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
   }
 
   const renderCell = (cell, x, y) => {
@@ -587,12 +604,15 @@ function GameScreen({
 
   return (
     <div className="game-screen">
+      <div className="visually-hidden" aria-live="polite">{formatClock(elapsed)} elapsed</div>
       <div className="game-header">
         <h2>{playerName}'s Run</h2>
         <div className="game-stats">
-          <span>Score: {score}</span>
-          <span>Dots Left: {dotsRemaining}</span>
+          <span>Score: <span className="tick-num"><span key={score} className="tick-inner">{score}</span></span></span>
+          <span>Dots: <span className="tick-num"><span key={dotsRemaining} className="tick-inner">{dotsRemaining}</span></span></span>
+          <span>Time: {formatClock(elapsed)}</span>
           <span>{isMultiplayer ? multiplayerStatus : 'Ghosts: 4'}</span>
+          {isMultiplayer && isMultiplayerReady && <span className="status-pill pulse">Live</span>}
           {isMultiplayer && sessionId && <span>Session: {sessionId}</span>}
         </div>
         <button onClick={onBackToLogin} className="back-button">Back to Modes</button>
@@ -634,7 +654,7 @@ function GameScreen({
         <div className="game-overlay game-over-overlay">
           <div className="game-message game-over-message">
             <div className="game-over-icon">KO</div>
-            <h2 className="game-over-title">HAHA! YOU LOST</h2>
+            <h2 className="game-over-title">GAME OVER</h2>
             <div className="score-display">
               <span className="score-label">Final Score</span>
               <span className="score-value">{score}</span>
@@ -644,7 +664,7 @@ function GameScreen({
             </p>
             <div className="game-over-buttons">
               <button onClick={resetGame} className="btn-try-again">
-                TRY AGAIN
+                PLAY AGAIN
               </button>
               <button onClick={onBackToLogin} className="btn-back-modes">
                 BACK TO MODES

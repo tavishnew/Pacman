@@ -1,0 +1,97 @@
+{
+  "target": "frontend",
+  "date": "2026-07-13",
+  "command": "critique",
+  "degradedRun": true,
+  "degradedReason": "No sub-agent/Task tool available (assessments run inline) and no browser in sandbox, so Assessment B uses the local detector only, not live screenshot evidence.",
+  "assessmentB_detector": {
+    "tool": "detect.mjs --json frontend",
+    "findings": [
+      {
+        "antipattern": "overused-font",
+        "severity": "warning",
+        "file": "frontend/index.html",
+        "detail": "Space Grotesk is an overused/AI-default display face. Brutalist spec chose it deliberately; consider a more distinctive grotesque if differentiation matters."
+      }
+    ]
+  },
+  "assessmentA_heuristics": {
+    "scale": "0-4 (4 best)",
+    "scores": {
+      "visibility_of_system_status": 3,
+      "match_between_system_and_real_world": 3,
+      "user_control_and_freedom": 3,
+      "consistency_and_standards": 4,
+      "error_prevention": 2,
+      "recognition_rather_than_recall": 3,
+      "flexibility_and_efficiency_of_use": 2,
+      "aesthetic_and_minimalist_design": 3,
+      "error_recovery": 2,
+      "help_and_documentation": 1
+    },
+    "total": 26,
+    "rating": "Acceptable (20-27): significant improvements needed before users are happy"
+  },
+  "cognitive_load": {
+    "failed_items": 1,
+    "verdict": "Low cognitive load. Screens are single-focus; mode grid is 3 cards (<=4); nav is labeled. Minor: auto-hiding navbar can hide location cues."
+  },
+  "issues": [
+    {
+      "id": "contrast-yellow-on-paper",
+      "severity": "P1",
+      "title": "Yellow text on light paper fails contrast everywhere",
+      "detail": "Headlines/brand use --accent-yellow (#F6C500) as TEXT on --paper (#F3EFE3) / --paper-raised (#FAF7EE). Measured ~1.4:1 and ~1.5:1. WCAG needs 3:1 for large text, 4.5:1 for normal. Affected: .logo, .welcome-section h2, .leaderboard-header h2, .login-box h2, .game-header h2, .game-message h2, .score-value. The brand wordmark is effectively unreadable.",
+      "fix": "Headings/brand text should be --ink (#111) on paper. Keep yellow as FILL (header strips, active-nav fill, button hover, yellow text only on dark/ink surfaces). Score value -> ink or yellow-on-ink block."
+    },
+    {
+      "id": "contrast-accent-text-normal",
+      "severity": "P2",
+      "title": "Red/green accent text fails 4.5:1 at normal size",
+      "detail": "Red #D8402C (~3.9:1) and green #1F8A52 (~3.8:1) pass for large/bold but FAIL for normal-size text on paper. Affected: .login-required-note, .nav-btn.logout, .btn-try-again text, .lobby-session-id code, .waiting-message strong.",
+      "fix": "Use ink for normal-size accent text; reserve red/green for large/bold, fills, or borders. Or darken the accents for text use."
+    },
+    {
+      "id": "focus-ring-visibility",
+      "severity": "P2",
+      "title": "Focus outline (yellow) low-contrast on paper",
+      "detail": "button:focus-visible/a:focus-visible outline is 3px solid --accent-yellow on paper -> poor visibility for keyboard users.",
+      "fix": "Use a high-contrast focus ring: 3px solid --ink with offset, or a double ring (ink + paper). Yellow ring only acceptable on dark surfaces."
+    },
+    {
+      "id": "idle-liveness-motion",
+      "severity": "P2",
+      "title": "Idle/liveness motion from the brutalist spec is not implemented",
+      "detail": "DESIGN.md section 7 calls for live-data ticks, status-tag pulses, corner-tag jitter, and staggered stamp entrances to keep the UI from feeling static. None are wired (needs JSX/data + CSS). Currently the only motion is hover/press + chomp.",
+      "fix": "Run $impeccable animate frontend to add the snap-eased idle/stamp motion without glow."
+    },
+    {
+      "id": "overused-font",
+      "severity": "P3",
+      "title": "Space Grotesk is an overused display face",
+      "detail": "Detector warning: Space Grotesk converges with other AI-default faces. The brutalist spec chose it deliberately, so this is a preference call, not a defect.",
+      "fix": "Keep, or swap the display face for a more distinctive grotesque if brand differentiation matters."
+    },
+    {
+      "id": "hard-shadow-clipping",
+      "severity": "P3",
+      "title": "Hard offset shadows can clip at viewport edges",
+      "detail": "8px/10px solid ink shadows + translate(-2px,-2px) hover on cards/buttons can be clipped by .app-container/.content overflow at the screen edges; heavy shadows also add visual weight.",
+      "fix": "Ensure containers have enough padding (>= shadow offset) or inset the shadow on edge elements; acceptable as-is for brutalist intent."
+    },
+    {
+      "id": "error-empty-copy",
+      "severity": "P3",
+      "title": "Error/empty-state copy not reviewed",
+      "detail": "Empty states exist (.no-friends, .no-data) but error-message copy and recovery guidance were not inspected in JSX.",
+      "fix": "Run $impeccable clarify frontend to harden UX copy and error messages."
+    }
+  ],
+  "persona_red_flags": {
+    "Jordan_first_timer": "Yellow headings/logos are hard to read (P1); otherwise icons are labeled and flow is clear.",
+    "Sam_a11y": "Yellow-on-paper fails contrast; yellow focus ring is low-visibility; keyboard flow otherwise plausible.",
+    "Casey_mobile": "44px targets mostly met; hard shadows may clip on small screens; responsive grids are sound.",
+    "Alex_power": "No keyboard shortcuts or bulk actions evident.",
+    "Riley_stress": "Error/empty-state recovery not verified in code."
+  }
+}

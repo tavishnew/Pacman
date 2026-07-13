@@ -7,7 +7,7 @@ import GameLauncher from './components/GameLauncher'
 import FriendsList from './components/FriendsList'
 import Leaderboard from './components/Leaderboard'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+import { API_URL } from './config'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('login')
@@ -19,20 +19,6 @@ function App() {
   const [statsRefreshKey, setStatsRefreshKey] = useState(0)
   const lastScrollY = useRef(0)
   const contentRef = useRef(null)
-
-  useEffect(() => {
-    if (!import.meta.env.DEV) return
-
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000'
-    console.log('API URL:', apiUrl)
-    console.log('Environment:', import.meta.env.MODE)
-    console.log('Current origin:', window.location.origin)
-
-    fetch(`${apiUrl}/api/health`)
-      .then(res => res.json())
-      .then(data => console.log('Backend connected:', data))
-      .catch(err => console.error('Backend unreachable:', err))
-  }, [])
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token')
@@ -63,29 +49,14 @@ function App() {
     }
   }, [token, currentPage]) // Re-run when content area might change
 
-  // Cursor glow tracking — desktop only
-  useEffect(() => {
-    const isTouch = window.matchMedia('(hover: none)').matches
-    if (isTouch) return
-
-    const cursorGlow = document.getElementById('cursor-glow')
-    if (!cursorGlow) return
-
-    const handleMouseMove = (e) => {
-      cursorGlow.style.left = e.clientX + 'px'
-      cursorGlow.style.top = e.clientY + 'px'
+  const authErrorMessage = (context) => {
+    if (context === 'login') {
+      return "We couldn't sign you in. Double-check your email and password, then try again."
     }
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true })
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
-
-  const describeAxiosError = (err, fallback) => {
-    if (!err.response) {
-      return `${fallback}: cannot reach the server. Check your internet connection or try again shortly.`
+    if (context === 'register') {
+      return "We couldn't create your account. Check the form and try again."
     }
-    const serverMessage = err.response.data?.error || err.response.statusText || 'Unknown error'
-    return `${fallback}: ${serverMessage}`
+    return 'Something went wrong. Please try again.'
   }
 
   const handleLogin = async (email, password) => {
@@ -101,7 +72,7 @@ function App() {
       setUser({ user_id, username })
       setCurrentPage('dashboard')
     } catch (err) {
-      alert(describeAxiosError(err, 'Login failed'))
+      alert(authErrorMessage('login'))
     }
     setLoading(false)
   }
@@ -119,7 +90,7 @@ function App() {
       setUser({ user_id, username })
       setCurrentPage('dashboard')
     } catch (err) {
-      alert(describeAxiosError(err, 'Registration failed'))
+      alert(authErrorMessage('register'))
     }
     setLoading(false)
   }
@@ -134,7 +105,7 @@ function App() {
   }
 
   const requireLoginForMultiplayer = () => {
-    alert('Multiplayer requires a real account. Please login or register to play 2 Player mode.')
+    alert('2 Player mode needs a free account. Log in or sign up to play with friends.')
     handleLogout()
   }
 
@@ -173,10 +144,10 @@ function App() {
         </div>
         <div className="nav-right">
           {!String(user?.user_id || '').startsWith('guest') && <span className="user-badge">{user?.username}</span>}
-          <button className="nav-btn" onClick={() => navigateTo('dashboard')}>Dashboard</button>
-          <button className="nav-btn" onClick={() => navigateTo('play')}>Play</button>
-          <button className="nav-btn" onClick={() => navigateTo('friends')}>Friends</button>
-          <button className="nav-btn" onClick={() => navigateTo('leaderboard')}>Scores</button>
+          <button className={`nav-btn ${currentPage === 'dashboard' ? 'active' : ''}`} onClick={() => navigateTo('dashboard')}>Dashboard</button>
+          <button className={`nav-btn ${currentPage === 'play' ? 'active' : ''}`} onClick={() => navigateTo('play')}>Play</button>
+          <button className={`nav-btn ${currentPage === 'friends' ? 'active' : ''}`} onClick={() => navigateTo('friends')}>Friends</button>
+          <button className={`nav-btn ${currentPage === 'leaderboard' ? 'active' : ''}`} onClick={() => navigateTo('leaderboard')}>Scores</button>
           <button className="nav-btn logout" onClick={handleLogout}>Logout</button>
         </div>
       </nav>

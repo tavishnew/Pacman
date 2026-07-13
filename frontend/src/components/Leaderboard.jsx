@@ -51,7 +51,7 @@ function Leaderboard({ user, token, API_URL }) {
     <div className="leaderboard-content">
       <h3>{title}</h3>
       {data.length === 0 ? (
-        <div className="no-data">No data available</div>
+      <div className="no-data">No scores yet. Play a round to claim your spot on the board.</div>
       ) : (
         <div className="leaderboard-table">
           <div className="table-header">
@@ -64,7 +64,8 @@ function Leaderboard({ user, token, API_URL }) {
           {data.map((player, index) => (
             <div
               key={player.id}
-              className={`table-row ${player.id === user?.user_id ? 'current-user' : ''}`}
+              className={`table-row anim-stamp ${player.id === user?.user_id ? 'current-user' : ''}`}
+              style={{ '--i': index }}
             >
               <span className="rank">{getRankIcon(index + 1)}</span>
               <span className="player-name">{player.username}</span>
@@ -87,6 +88,7 @@ function Leaderboard({ user, token, API_URL }) {
       <div className="leaderboard-header">
         <h2>🏅 Leaderboards</h2>
         <p>See how you stack up against other players!</p>
+        <span className="status-pill pulse">Live</span>
       </div>
 
       <div className="leaderboard-tabs">
@@ -110,19 +112,19 @@ function Leaderboard({ user, token, API_URL }) {
       </div>
 
       <div className="leaderboard-stats">
-        <div className="stat-box">
+        <div className="stat-box anim-stamp" style={{ '--i': 0 }}>
           <h4>Your Rank (Global)</h4>
           <div className="stat-value">
             {globalLeaderboard.findIndex(p => p.id === user?.user_id) + 1 || 'Unranked'}
           </div>
         </div>
-        <div className="stat-box">
+        <div className="stat-box anim-stamp" style={{ '--i': 1 }}>
           <h4>Your Best Score</h4>
           <div className="stat-value">
             {globalLeaderboard.find(p => p.id === user?.user_id)?.high_score || 0}
           </div>
         </div>
-        <div className="stat-box">
+        <div className="stat-box anim-stamp" style={{ '--i': 2 }}>
           <h4>Games Played</h4>
           <div className="stat-value">
             {globalLeaderboard.find(p => p.id === user?.user_id)?.games_played || 0}

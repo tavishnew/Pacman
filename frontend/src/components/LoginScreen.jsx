@@ -19,7 +19,7 @@ function LoginScreen({ onLogin, onRegister, onGuestPlay, loading }) {
 
   return (
     <div className="login-container">
-      <div className="login-box">
+      <div className="login-box anim-stamp">
         <h2>👾 PAC-MAN 👾</h2>
         
         <div className="login-tabs">
@@ -95,7 +95,7 @@ function LoginScreen({ onLogin, onRegister, onGuestPlay, loading }) {
           )}
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '12px', color: 'rgba(0,255,255,0.7)' }}>
+        <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '12px', color: '#4A4A45' }}>
           🎮 READY PLAYER ONE? 🎮
         </p>
       </div>

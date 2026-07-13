@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './GameLauncher.css'
 import GameScreen from './GameScreen'
 
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+import { API_URL as apiUrl } from '../config'
 
 function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGameEnd }) {
   const [isPlayingSolo, setIsPlayingSolo] = useState(false)
@@ -14,6 +14,15 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
   const [lobbySessionId, setLobbySessionId] = useState(null)
   const [copied, setCopied] = useState(false)
   const isGuest = token === 'guest-session' || String(user?.user_id || '').startsWith('guest')
+
+  const [playersOnline, setPlayersOnline] = useState(1240)
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setPlayersOnline(n => Math.max(1000, n + (Math.floor(Math.random() * 7) - 3)))
+    }, 3500)
+    return () => window.clearInterval(id)
+  }, [])
 
   const exitGame = () => {
     setIsPlayingSolo(false)
@@ -59,14 +68,14 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
         setLobbySessionId(data.session_id)
         setCopied(false)
       } else {
-        alert(data.error || 'Failed to create game session')
+        alert("We couldn't create the game. Please try again.")
       }
     } catch (error) {
       console.error('Multiplayer error:', error)
       if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
-        alert('Could not reach the game server. It may be starting up — please wait 30 seconds and try again.')
+        alert('Could not reach the game server. It may be starting up - please wait 30 seconds and try again.')
       } else {
-        alert('Failed to create multiplayer game. The server may be waking up — try again shortly.')
+        alert('Failed to create multiplayer game. The server may be waking up - try again shortly.')
       }
     } finally {
       setLoading(false)
@@ -118,7 +127,7 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
       launchMultiplayerGame(sessionId)
     } catch (error) {
       console.error('Join multiplayer error:', error)
-      alert(error.message || 'Failed to join multiplayer game.')
+      alert("We couldn't join that game. Check the Session ID and try again.")
     } finally {
       setLoading(false)
     }
@@ -145,7 +154,7 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
       icon: '1P',
       description: 'Challenge yourself',
       features: ['Classic gameplay', 'Score tracking', 'Personal best'],
-      color: '#8ee99f',
+      color: '#1F8A52',
       action: startSolo,
       disabled: false
     },
@@ -155,7 +164,7 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
       icon: '2P',
       description: 'Play with friends',
       features: ['Real-time multiplayer', 'Invite friends', 'Competitive scoring'],
-      color: '#ef6f9b',
+      color: '#D8402C',
       action: createMultiplayerGame,
       disabled: loading
     },
@@ -165,7 +174,7 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
       icon: 'CUP',
       description: 'Ranked competition',
       features: ['Ranked matches', 'Brackets', 'Achievements'],
-      color: '#ffd45a',
+      color: '#F6C500',
       action: () => {},
       disabled: true
     }
@@ -176,6 +185,12 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
       <div className="launcher-header">
         <h2 className="launcher-title">CHOOSE YOUR GAME MODE</h2>
         <p className="launcher-subtitle">Pick your challenge</p>
+        <div className="arcade-status">
+          <span className="status-label">Arcade Online</span>
+          <span className="tick-num">
+            <span key={playersOnline} className="tick-inner">{playersOnline}</span>
+          </span>
+        </div>
       </div>
 
       {lobbySessionId && (
@@ -189,7 +204,7 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
             </button>
           </div>
           <button className="lobby-start-btn" onClick={startFromLobby}>
-            START WAITING FOR PLAYER 2
+            START GAME
           </button>
           <button className="lobby-cancel-btn" onClick={() => setLobbySessionId(null)}>
             CANCEL
@@ -198,12 +213,12 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
       )}
 
       <div className="game-modes-grid">
-        {modes.map(mode => (
+        {modes.map((mode, index) => (
           <div
             key={mode.id}
-            className={`mode-card ${selectedMode === mode.id ? 'selected' : ''} ${mode.disabled ? 'disabled' : ''} ${mode.id === 'multiplayer' && isGuest ? 'login-required' : ''}`}
+            className={`mode-card anim-stamp ${selectedMode === mode.id ? 'selected' : ''} ${mode.disabled ? 'disabled' : ''} ${mode.id === 'multiplayer' && isGuest ? 'login-required' : ''}`}
             onClick={() => !mode.disabled && setSelectedMode(mode.id)}
-            style={{ '--card-color': mode.color }}
+            style={{ '--card-color': mode.color, '--i': index }}
           >
             <div className="card-top">
               <div className="mode-icon-large">{mode.icon}</div>
@@ -251,7 +266,7 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
                 }}
                 disabled={mode.disabled || loading}
               >
-                {mode.disabled ? 'COMING SOON' : loading && mode.id === 'multiplayer' ? 'WORKING...' : mode.id === 'multiplayer' && isGuest ? 'LOGIN TO PLAY' : mode.id === 'multiplayer' ? 'CREATE GAME' : 'PLAY NOW'}
+                {mode.disabled ? 'COMING SOON' : loading && mode.id === 'multiplayer' ? 'CREATING GAME...' : mode.id === 'multiplayer' && isGuest ? 'LOGIN TO PLAY' : mode.id === 'multiplayer' ? 'CREATE GAME' : 'PLAY NOW'}
               </button>
             </div>
           </div>
@@ -261,19 +276,19 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
       <div className="game-features-section">
         <h3 className="features-title">GAME FEATURES</h3>
         <div className="features-grid">
-          <div className="feature-item">
+          <div className="feature-item anim-stamp" style={{ '--i': 0 }}>
             <span className="feature-label">AI GHOSTS</span>
             <span className="feature-value">4</span>
           </div>
-          <div className="feature-item">
+          <div className="feature-item anim-stamp" style={{ '--i': 1 }}>
             <span className="feature-label">PELLETS</span>
             <span className="feature-value">244</span>
           </div>
-          <div className="feature-item">
+          <div className="feature-item anim-stamp" style={{ '--i': 2 }}>
             <span className="feature-label">PLATFORMS</span>
             <span className="feature-value">WEB</span>
           </div>
-          <div className="feature-item">
+          <div className="feature-item anim-stamp" style={{ '--i': 3 }}>
             <span className="feature-label">FPS</span>
             <span className="feature-value">60</span>
           </div>

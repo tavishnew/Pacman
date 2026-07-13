@@ -1,5 +1,5 @@
 /* ============================================
-   FRIENDS LIST
+   FRIENDS LIST (Brutalist)
    ============================================ */
 
 .friends-list {
@@ -13,24 +13,24 @@
 
 .friends-header h2 {
   font-size: clamp(24px, 4vw, 32px);
-  color: var(--accent-pink);
+  color: var(--accent-red);
   font-family: var(--font-heading);
   font-weight: 700;
-  letter-spacing: 0.02em;
-  text-shadow:
-    3px 3px 0 rgba(0, 229, 255, 0.34),
-    0 0 16px rgba(255, 47, 135, 0.24);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: none;
+  animation: clip-wipe 0.22s var(--ease-snap) backwards;
 }
 
 .add-friend-section,
 .invites-section,
 .friends-section {
-  background: var(--surface);
-  border: 2px solid var(--border-subtle);
+  background: var(--paper-raised);
+  border: 3px solid var(--ink);
   padding: 24px;
-  border-radius: 8px;
+  border-radius: 0;
   margin-bottom: 24px;
-  box-shadow: var(--shadow-subtle);
+  box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
 }
@@ -43,34 +43,20 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 5px;
-  border-radius: 6px 6px 0 0;
-  opacity: 0.9;
+  height: 8px;
   pointer-events: none;
 }
 
 .add-friend-section::before {
-  background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+  background: var(--accent-green);
 }
 
 .invites-section::before {
-  background: linear-gradient(90deg, var(--accent-amber), var(--accent-pink));
+  background: var(--accent-yellow);
 }
 
 .friends-section::before {
-  background: linear-gradient(90deg, var(--accent-blue), var(--accent-amber));
-}
-
-.add-friend-section {
-  border-color: rgba(127, 189, 136, 0.22);
-}
-
-.invites-section {
-  border-color: rgba(216, 180, 95, 0.22);
-}
-
-.friends-section {
-  border-color: rgba(127, 183, 215, 0.22);
+  background: var(--ink);
 }
 
 .add-friend-section h3,
@@ -79,7 +65,9 @@
   margin-bottom: 16px;
   font-family: var(--font-heading);
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  animation: clip-wipe 0.22s var(--ease-snap) backwards;
 }
 
 .add-friend-section h3 {
@@ -87,11 +75,11 @@
 }
 
 .invites-section h3 {
-  color: var(--accent-amber);
+  color: var(--ink);
 }
 
 .friends-section h3 {
-  color: var(--accent-blue-strong);
+  color: var(--ink);
 }
 
 .add-friend-form {
@@ -109,39 +97,44 @@
   margin: 0;
   padding: 12px 14px;
   height: 50px;
-  background: rgba(4, 8, 16, 0.56);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  border-radius: 7px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  border-radius: 0;
   font-size: 15px;
-  transition: border-color 0.18s ease, background 0.18s ease;
+  transition: border-color var(--dur-fast) var(--ease-snap),
+    background var(--dur-fast) var(--ease-snap);
 }
 
 .add-friend-form input:focus {
   outline: none;
-  border-color: rgba(127, 189, 136, 0.5);
-  background: rgba(6, 11, 22, 0.82);
+  border-color: var(--accent-yellow);
+  background: var(--paper-raised);
 }
 
 .add-friend-form input::placeholder {
-  color: var(--text-muted);
+  color: var(--ink-faint);
 }
 
 .add-friend-btn,
 .accept-btn,
 .invite-play-btn {
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(127, 189, 136, 0.42);
-  color: var(--accent-green);
-  font-family: var(--font-arcade);
+  background: var(--paper-raised);
+  border: 3px solid var(--accent-green);
+  color: var(--ink);
+  font-family: var(--font-mono);
   cursor: pointer;
-  border-radius: 7px;
-  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  border-radius: 0;
+  transition: transform var(--dur-fast) var(--ease-snap),
+    box-shadow var(--dur-fast) var(--ease-snap),
+    background var(--dur-fast) var(--ease-snap),
+    color var(--dur-fast) var(--ease-snap);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   font-weight: 700;
   white-space: nowrap;
+  box-shadow: var(--shadow-btn);
 }
 
 .add-friend-btn {
@@ -149,15 +142,15 @@
   min-width: 200px;
   padding: 12px 20px;
   height: 50px;
-  font-size: 24px;
-  box-shadow: 4px 4px 0 rgba(0, 255, 102, 0.18);
+  font-size: 15px;
 }
 
 .add-friend-btn:hover,
 .accept-btn:hover {
-  background: rgba(127, 189, 136, 0.12);
-  border-color: rgba(127, 189, 136, 0.62);
-  color: var(--text-primary);
+  background: var(--accent-green);
+  color: var(--paper);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-btn-hover);
 }
 
 .invites-list {
@@ -171,27 +164,27 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.035);
-  border-radius: 8px;
-  border: 1px solid var(--border-subtle);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 0;
   gap: 12px;
 }
 
 .invite-item span {
-  color: var(--text-secondary);
+  color: var(--ink-soft);
   font-size: 15px;
 }
 
 .accept-btn {
   padding: 8px 15px;
-  height: 36px;
-  font-size: 22px;
+  min-height: 44px;
+  font-size: 15px;
 }
 
 .no-friends {
   text-align: center;
   padding: 32px 20px;
-  color: var(--text-muted);
+  color: var(--ink-faint);
   font-size: 15px;
 }
 
@@ -203,36 +196,39 @@
 }
 
 .friend-card {
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid var(--border-subtle);
+  background: var(--paper);
+  border: 2px solid var(--ink);
   padding: 18px;
-  border-radius: 8px;
+  border-radius: 0;
   display: flex;
   align-items: center;
   gap: 16px;
   min-height: 132px;
-  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: transform var(--dur-fast) var(--ease-snap),
+    box-shadow var(--dur-fast) var(--ease-snap),
+    background var(--dur-fast) var(--ease-snap);
+  box-shadow: var(--shadow-btn);
 }
 
 .friend-card:hover {
-  border-color: rgba(127, 183, 215, 0.32);
-  background: rgba(255, 255, 255, 0.055);
-  box-shadow: var(--shadow-subtle);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-btn-hover);
+  background: var(--paper-raised);
 }
 
 .friend-avatar {
   width: 46px;
   height: 46px;
   min-width: 46px;
-  background: rgba(127, 183, 215, 0.16);
-  border-radius: 50%;
+  background: var(--paper-raised);
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  font-weight: 800;
-  color: var(--accent-blue-strong);
-  border: 1px solid rgba(127, 183, 215, 0.36);
+  font-weight: 700;
+  color: var(--ink);
+  border: 2px solid var(--ink);
 }
 
 .friend-info {
@@ -241,10 +237,10 @@
 }
 
 .friend-info h4 {
-  color: var(--text-primary);
+  color: var(--ink);
   margin: 0 0 4px 0;
   font-size: 15px;
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -252,23 +248,24 @@
 }
 
 .friend-info p {
-  color: var(--text-muted);
+  color: var(--ink-faint);
   margin: 0;
   font-size: 13px;
 }
 
 .invite-play-btn {
   padding: 8px 14px;
-  height: 36px;
-  border-color: rgba(216, 180, 95, 0.42);
-  color: var(--accent-amber);
-  font-size: 22px;
+  min-height: 44px;
+  border-color: var(--accent-yellow);
+  color: var(--ink);
+  font-size: 15px;
 }
 
 .invite-play-btn:hover {
-  background: rgba(216, 180, 95, 0.12);
-  border-color: rgba(216, 180, 95, 0.62);
-  color: var(--text-primary);
+  background: var(--accent-yellow);
+  color: var(--ink);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-btn-hover);
 }
 
 @media (max-width: 767px) {

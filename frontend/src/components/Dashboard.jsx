@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import './Dashboard.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+import { API_URL } from '../config'
 
 function Dashboard({ user, token, refreshKey = 0, onNavigate }) {
   const [stats, setStats] = useState({})
@@ -43,22 +43,22 @@ function Dashboard({ user, token, refreshKey = 0, onNavigate }) {
       </div>
 
       <div className="stats-grid">
-        <div className="stat-card">
+        <div className="stat-card anim-stamp" style={{ '--i': 0 }}>
           <h3>🏆 High Score</h3>
           <div className="stat-value">{stats.high_score || 0}</div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card anim-stamp" style={{ '--i': 1 }}>
           <h3>🎯 Games Played</h3>
           <div className="stat-value">{stats.games_played || 0}</div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card anim-stamp" style={{ '--i': 2 }}>
           <h3>⏱️ Best Time</h3>
           <div className="stat-value">{stats.completion_time ? `${stats.completion_time.toFixed(1)}s` : 'N/A'}</div>
         </div>
 
-        <div className="stat-card">
+        <div className="stat-card anim-stamp" style={{ '--i': 3 }}>
           <h3>📅 Last Played</h3>
           <div className="stat-value">
             {stats.last_played ? new Date(stats.last_played).toLocaleDateString() : 'Never'}

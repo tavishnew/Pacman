@@ -1,5 +1,5 @@
 /* ============================================
-   LOGIN SCREEN
+   LOGIN SCREEN (Brutalist)
    ============================================ */
 
 .login-container {
@@ -8,16 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background:
-    linear-gradient(rgba(0, 229, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.045) 1px, transparent 1px),
-    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 4px),
-    radial-gradient(circle at 24% 18%, rgba(255, 230, 0, 0.24), transparent 32%),
-    radial-gradient(circle at 78% 8%, rgba(0, 229, 255, 0.24), transparent 34%),
-    radial-gradient(circle at 76% 82%, rgba(255, 47, 135, 0.18), transparent 34%),
-    linear-gradient(180deg, rgba(7, 15, 45, 0.95), rgba(3, 7, 17, 0.98)),
-    #030711;
-  background-size: 34px 34px, 34px 34px, auto, auto, auto, auto, auto;
+  background: var(--paper);
   z-index: 1000;
   min-height: 100dvh;
   overflow-y: auto;
@@ -34,13 +25,13 @@
   width: 100%;
   max-width: min(460px, calc(100vw - 32px));
   padding: clamp(24px, 5vw, 38px);
-  background: var(--surface-raised);
-  border: 2px solid var(--border-strong);
-  border-radius: 10px;
+  background: var(--paper-raised);
+  border: 3px solid var(--ink);
+  border-radius: 0;
   position: relative;
   margin: auto;
   text-align: center;
-  box-shadow: var(--shadow-lift), 8px 8px 0 rgba(255, 47, 135, 0.16);
+  box-shadow: var(--shadow-card);
 }
 
 .login-box::before {
@@ -49,24 +40,21 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 5px;
-  background: linear-gradient(90deg, var(--accent-blue), var(--accent-amber), var(--accent-pink));
-  border-radius: 8px 8px 0 0;
-  opacity: 0.95;
+  height: 8px;
+  background: var(--accent-yellow);
   pointer-events: none;
 }
 
 .login-box h2 {
   font-family: var(--font-heading);
-  color: var(--accent-amber);
+  color: var(--ink);
   font-size: clamp(23px, 6vw, 34px);
   margin-bottom: clamp(20px, 4vh, 28px);
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  text-shadow:
-    3px 3px 0 rgba(255, 47, 135, 0.78),
-    0 0 18px rgba(255, 230, 0, 0.34);
+  letter-spacing: 0.04em;
+  text-shadow: none;
+  animation: clip-wipe 0.22s var(--ease-snap) backwards;
 }
 
 .login-tabs {
@@ -74,35 +62,38 @@
   gap: 10px;
   margin-bottom: clamp(22px, 4vh, 32px);
   padding: 4px;
-  background: rgba(255, 255, 255, 0.075);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 0;
 }
 
 .login-tabs button {
   flex: 1;
   padding: 11px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  color: var(--text-secondary);
+  border: 2px solid transparent;
+  border-radius: 0;
+  color: var(--ink);
   cursor: pointer;
-  font-family: var(--font-arcade);
-  font-size: 24px;
+  font-family: var(--font-mono);
+  font-size: 15px;
   font-weight: 700;
   text-transform: uppercase;
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  letter-spacing: 0.06em;
+  transition: background var(--dur-fast) var(--ease-snap),
+    color var(--dur-fast) var(--ease-snap),
+    border-color var(--dur-fast) var(--ease-snap);
 }
 
 .login-tabs button.active {
-  border-color: rgba(40, 223, 255, 0.58);
-  color: var(--text-primary);
-  background: rgba(40, 223, 255, 0.18);
+  border-color: var(--ink);
+  background: var(--accent-yellow);
+  color: var(--ink);
 }
 
 .login-tabs button:hover:not(.active) {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .form-group {
@@ -113,47 +104,49 @@
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  color: var(--text-secondary);
-  font-family: var(--font-body);
-  text-transform: none;
-  font-size: 14px;
-  font-weight: 600;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
 }
 
 .form-group input {
   width: 100%;
   min-width: 0;
   padding: 13px 14px;
-  background: rgba(7, 13, 27, 0.58);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  font-family: var(--font-body);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  font-family: var(--font-mono);
   font-size: 15px;
   outline: none;
-  border-radius: 7px;
-  transition: border-color 0.18s ease, background 0.18s ease;
+  border-radius: 0;
+  transition: border-color var(--dur-fast) var(--ease-snap),
+    background var(--dur-fast) var(--ease-snap);
 }
 
 .form-group input:focus {
-  border-color: rgba(255, 212, 90, 0.55);
-  background: rgba(10, 18, 35, 0.86);
+  border-color: var(--accent-yellow);
+  background: var(--paper-raised);
 }
 
 .login-box .btn {
   width: 100%;
   margin: 8px 0;
   padding: 13px 16px;
-  font-size: 24px;
+  font-size: 15px;
 }
 
 .guest-play-btn {
-  border-color: rgba(255, 212, 90, 0.52) !important;
-  color: var(--accent-amber) !important;
+  border-color: var(--accent-yellow) !important;
+  color: var(--ink) !important;
 }
 
 .guest-play-btn:hover {
-  background: rgba(255, 212, 90, 0.16) !important;
-  color: var(--text-primary) !important;
+  background: var(--accent-yellow) !important;
+  color: var(--ink) !important;
 }
 
 @media (max-width: 600px) {

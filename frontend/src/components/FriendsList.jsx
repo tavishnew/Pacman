@@ -46,10 +46,10 @@ function FriendsList({ user, token, API_URL }) {
       await axios.post(`${API_URL}/api/social/invite`, {
         invitee_username: friendUsername.trim()
       }, authHeaders)
-      alert('Friend invite sent!')
+      alert(`Invite sent to ${friendUsername}.`)
       setFriendUsername('')
     } catch (err) {
-      alert('Failed to send invite: ' + (err.response?.data?.error || 'Unknown error'))
+      alert("We couldn't send that invite. Double-check the username and try again.")
     }
   }
 
@@ -59,7 +59,7 @@ function FriendsList({ user, token, API_URL }) {
       fetchFriends()
       fetchInvites()
     } catch (err) {
-      alert('Failed to accept invite')
+      alert("We couldn't accept that invite. Please try again.")
     }
   }
 
@@ -83,7 +83,7 @@ function FriendsList({ user, token, API_URL }) {
       }
       alert(`Game invite sent to ${friend.username}!\nSession ID: ${newSessionId}`)
     } catch (err) {
-      alert('Failed to invite to play: ' + (err.response?.data?.error || err.message || 'Unknown error'))
+      alert(`We couldn't start a game with ${friend.username}. Please try again.`)
     } finally {
       setInvitingFriendId(null)
     }
@@ -142,8 +142,8 @@ function FriendsList({ user, token, API_URL }) {
           </div>
         ) : (
           <div className="friends-grid">
-            {friends.map(friend => (
-              <div key={friend.id} className="friend-card">
+            {friends.map((friend, index) => (
+              <div key={friend.id} className="friend-card anim-stamp" style={{ '--i': index }}>
                 <div className="friend-avatar">
                   {friend.username.charAt(0).toUpperCase()}
                 </div>
