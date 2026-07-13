@@ -138,6 +138,32 @@ Pacman/
 ├── README.md
 ```
 
+# 🕹️ Optional Native Build (`game/`)
+
+The `game/` folder contains an independent C++/SFML implementation of Pac-Man
+(`game.cpp`, `game.h`, `main.cpp`) built via the included `Makefile`. It is a
+**standalone desktop build** — it is NOT compiled to WebAssembly and is NOT
+referenced by the React/Vite web app. The playable web game lives in
+`frontend/src/components/GameScreen.jsx`.
+
+To build and run the native version (requires SFML installed):
+
+```bash
+cd game
+make
+./pacman_native        # or pacman_native.exe on Windows
+```
+
+The compiled `pacman_native` / `pacman_native.exe` binary is gitignored and
+should not be committed. Treat this folder as an optional, experimental
+alternative to the web client unless you intend to wire it into the build.
+
+# 📱 Mobile Controls
+
+The web game currently supports keyboard input only (WASD / arrow keys). Touch
+controls (swipe gestures or an on-screen D-pad) are **not yet implemented** —
+see the audit backlog for adding a mobile fallback.
+
 ---
 
 # 🚀 Future Improvements

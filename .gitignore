@@ -46,3 +46,6 @@ coverage/
 # Logs
 logs/
 *.log
+
+# Local tool/connector metadata (e.g. Manus config.json) - not project source
+config.json

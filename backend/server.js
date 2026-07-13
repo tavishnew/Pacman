@@ -2,7 +2,6 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const cors = require('cors');
 const http = require('http');
 const url = require('url');
@@ -17,19 +16,25 @@ const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET;
 const dbPath = process.env.DATABASE_PATH || './pacman.db';
 
-// Keep production bootable even if JWT_SECRET is absent/weak.
-// Render services can then come online while logging a clear warning.
+// Production requires a strong, stable JWT_SECRET. A missing or weak secret
+// would otherwise generate a fresh ephemeral key every boot (logging every
+// user out on restart) and break auth across multiple instances. Fail fast so
+// the misconfiguration is caught at deploy time instead of silently in prod.
+// Local/dev runs fall back to a fixed dev key for convenience.
 const hasWeakOrMissingJwtSecret =
   !JWT_SECRET || JWT_SECRET.length < 32 || JWT_SECRET === 'dev-key-change-in-production';
 let ACTIVE_JWT_SECRET = JWT_SECRET;
 
 if (hasWeakOrMissingJwtSecret) {
   if (isProduction) {
-    ACTIVE_JWT_SECRET = crypto.randomBytes(48).toString('hex');
-    console.warn('WARNING: JWT_SECRET is missing/weak in production. Using ephemeral secret for this boot; set JWT_SECRET (>=32 chars) in Render environment settings.');
-  } else {
-    ACTIVE_JWT_SECRET = 'dev-key-change-in-production';
+    console.error(
+      'FATAL: JWT_SECRET is missing or weak in production. Set JWT_SECRET to a ' +
+      'random string >= 32 chars (e.g. `openssl rand -hex 32`) in your Render ' +
+      'environment settings. Refusing to start.'
+    );
+    process.exit(1);
   }
+  ACTIVE_JWT_SECRET = 'dev-key-change-in-production';
 }
 
 const db = new sqlite3.Database(dbPath);
