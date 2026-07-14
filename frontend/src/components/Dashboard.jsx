@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import axios from 'axios'
 import './Dashboard.css'
 
 import { API_URL } from '../config'
@@ -54,7 +53,6 @@ const GAME_MODES = [
 function Dashboard({ user, token, refreshKey = 0, onNavigate }) {
   const [stats, setStats] = useState({})
   const [loading, setLoading] = useState(true)
-  const [playersOnline, setPlayersOnline] = useState(14082)
   const [selected, setSelected] = useState(null)
 
   const isGuest =
@@ -75,23 +73,19 @@ function Dashboard({ user, token, refreshKey = 0, onNavigate }) {
     ]
   })()
 
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setPlayersOnline((n) => Math.max(10000, n + (Math.floor(Math.random() * 21) - 10)))
-    }, 3500)
-    return () => window.clearInterval(id)
-  }, [])
-
   const fetchStats = useCallback(async () => {
     if (isGuest || !user?.user_id) {
       setLoading(false)
       return
     }
     try {
-      const res = await axios.get(`${API_URL}/api/game/stats/${user.user_id}`, {
+      const res = await fetch(`${API_URL}/api/game/stats/${user.user_id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      setStats(res.data || {})
+      let data = {}
+      try { data = await res.json() } catch { /* no body */ }
+      if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`)
+      setStats(data || {})
     } catch (err) {
       console.error('Failed to fetch stats:', err)
     }
@@ -156,13 +150,7 @@ function Dashboard({ user, token, refreshKey = 0, onNavigate }) {
             </div>
             <div className="net-row">
               <span>PLAYERS ONLINE</span>
-              <span className="net-num">
-                <span className="tick-num">
-                  <span key={playersOnline} className="tick-inner">
-                    {playersOnline.toLocaleString()}
-                  </span>
-                </span>
-              </span>
+              <span className="net-num">14,082</span>
             </div>
             <div className="net-row">
               <span>ACTIVE MATCHES</span>

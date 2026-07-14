@@ -15,15 +15,6 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
   const [copied, setCopied] = useState(false)
   const isGuest = token === 'guest-session' || String(user?.user_id || '').startsWith('guest')
 
-  const [playersOnline, setPlayersOnline] = useState(1240)
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setPlayersOnline(n => Math.max(1000, n + (Math.floor(Math.random() * 7) - 3)))
-    }, 3500)
-    return () => window.clearInterval(id)
-  }, [])
-
   const exitGame = () => {
     setIsPlayingSolo(false)
     setIsPlayingMultiplayer(false)
@@ -168,16 +159,6 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
       action: createMultiplayerGame,
       disabled: loading
     },
-    {
-      id: 'tournament',
-      title: 'TOURNAMENT',
-      icon: 'CUP',
-      description: 'Ranked competition',
-      features: ['Ranked matches', 'Brackets', 'Achievements'],
-      color: '#F6C500',
-      action: () => {},
-      disabled: true
-    }
   ]
 
   return (
@@ -188,7 +169,7 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
         <div className="arcade-status">
           <span className="status-label">Arcade Online</span>
           <span className="tick-num">
-            <span key={playersOnline} className="tick-inner">{playersOnline}</span>
+            <span className="tick-inner">1,240</span>
           </span>
         </div>
       </div>
@@ -216,8 +197,8 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
         {modes.map((mode, index) => (
           <div
             key={mode.id}
-            className={`mode-card anim-stamp ${selectedMode === mode.id ? 'selected' : ''} ${mode.disabled ? 'disabled' : ''} ${mode.id === 'multiplayer' && isGuest ? 'login-required' : ''}`}
-            onClick={() => !mode.disabled && setSelectedMode(mode.id)}
+            className={`mode-card anim-stamp ${selectedMode === mode.id ? 'selected' : ''} ${mode.id === 'multiplayer' && isGuest ? 'login-required' : ''}`}
+            onClick={() => setSelectedMode(mode.id)}
             style={{ '--card-color': mode.color, '--i': index }}
           >
             <div className="card-top">
@@ -259,14 +240,14 @@ function GameLauncher({ user, token, onPlayingStateChange, onRequireLogin, onGam
                 <p className="login-required-note">Login required for 2 Player mode.</p>
               )}
               <button
-                className={`launch-btn ${mode.disabled ? 'disabled' : ''}`}
+                className="launch-btn"
                 onClick={event => {
                   event.stopPropagation()
                   mode.action()
                 }}
-                disabled={mode.disabled || loading}
+                disabled={loading}
               >
-                {mode.disabled ? 'COMING SOON' : loading && mode.id === 'multiplayer' ? 'CREATING GAME...' : mode.id === 'multiplayer' && isGuest ? 'LOGIN TO PLAY' : mode.id === 'multiplayer' ? 'CREATE GAME' : 'PLAY NOW'}
+                {loading && mode.id === 'multiplayer' ? 'CREATING GAME...' : mode.id === 'multiplayer' && isGuest ? 'LOGIN TO PLAY' : mode.id === 'multiplayer' ? 'CREATE GAME' : 'PLAY NOW'}
               </button>
             </div>
           </div>

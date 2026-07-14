@@ -288,7 +288,7 @@ server.on('upgrade', (request, socket, head) => {
     return;
   }
 
-  jwt.verify(token, ACTIVE_JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, ACTIVE_JWT_SECRET, { algorithms: ['HS256'] }, (err, decoded) => {
     if (err || !decoded?.id) {
       socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
       socket.destroy();
@@ -342,6 +342,9 @@ app.get('/api/health', (req, res) => {
 // Auth Routes
 const USERNAME_RE = /^[A-Za-z0-9_-]{3,20}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Public dummy bcrypt hash — never a real password. Used only to equalize
+// login response timing so an attacker cannot enumerate accounts by speed.
+const DUMMY_HASH = '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy';
 
 function validateRegistrationInput({ username, email, password }) {
   if (typeof username !== 'string' || typeof email !== 'string' || typeof password !== 'string') {
@@ -408,7 +411,7 @@ app.post('/api/auth/register', registerLimiter, async (req, res) => {
             return res.status(500).json({ error: 'Registration failed' });
           }
 
-          const token = jwt.sign({ id: newUserId, username }, ACTIVE_JWT_SECRET, { expiresIn: '7d' });
+          const token = jwt.sign({ id: newUserId, username }, ACTIVE_JWT_SECRET, { algorithm: 'HS256', expiresIn: '7d' });
           res.json({ user_id: newUserId, username, token });
         }
       );
@@ -431,6 +434,8 @@ app.post('/api/auth/login', loginLimiter, (req, res) => {
       return res.status(500).json({ error: 'Login failed' });
     }
     if (!user) {
+      // Dummy compare to equalize timing and prevent user enumeration
+      await bcrypt.compare(password, DUMMY_HASH);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -446,7 +451,7 @@ app.post('/api/auth/login', loginLimiter, (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user.id, username: user.username }, ACTIVE_JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id, username: user.username }, ACTIVE_JWT_SECRET, { algorithm: 'HS256', expiresIn: '7d' });
     res.json({ user_id: user.id, username: user.username, token });
   });
 });
@@ -455,7 +460,7 @@ app.post('/api/auth/login', loginLimiter, (req, res) => {
 function verifyJwt(token) {
   if (!token || token === 'guest-session') return null;
   try {
-    return jwt.verify(token, ACTIVE_JWT_SECRET);
+    return jwt.verify(token, ACTIVE_JWT_SECRET, { algorithms: ['HS256'] });
   } catch {
     return null;
   }
@@ -700,7 +705,7 @@ app.post('/api/game/session/create', (req, res) => {
   );
 });
 
-app.get('/api/game/session/:id', (req, res) => {
+app.get('/api/game/session/:id', verifyToken, (req, res) => {
   db.get(
     `SELECT * FROM game_sessions WHERE id = ?`,
     [req.params.id],

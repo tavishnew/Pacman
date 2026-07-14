@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
-import axios from 'axios'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 import LoginScreen from './components/LoginScreen'
 import Dashboard from './components/Dashboard'
@@ -16,7 +15,6 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [statsRefreshKey, setStatsRefreshKey] = useState(0)
-  const contentRef = useRef(null)
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token')
@@ -28,27 +26,44 @@ function App() {
     }
   }, [])
 
-  // Pull the real reason out of an axios error so the user sees WHY a request
-  // failed (validation, duplicate username/email, rate limit, network, etc.)
+  // Surface the real server reason (validation, duplicate, rate limit, network)
+  // so the user sees WHY a request failed.
   const apiErrorMessage = (err, fallback) => {
-    const data = err?.response?.data
+    const data = err?.data ?? err?.response?.data
     if (data && typeof data.error === 'string' && data.error) return data.error
-    if (err?.response?.status === 429) {
+    const status = err?.status ?? err?.response?.status
+    if (status === 429) {
       return 'Too many attempts. Please wait a few minutes and try again.'
     }
-    if (!err?.response) return 'Network error — is the server running on port 5000?'
+    if (!status) return 'Network error — is the server running on port 5000?'
     return fallback || 'Something went wrong. Please try again.'
+  }
+
+  const postJson = async (url, body) => {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+    let data = {}
+    try { data = await res.json() } catch { /* no body */ }
+    if (!res.ok) {
+      const error = new Error(data.error || `Request failed (${res.status})`)
+      error.status = res.status
+      error.data = data
+      throw error
+    }
+    return data
   }
 
   const handleLogin = async (email, password) => {
     setLoading(true)
     try {
-      const res = await axios.post(`${API_URL}/api/auth/login`, { email, password })
-      const { token: newToken, user_id, username } = res.data
-      
+      const { token: newToken, user_id, username } = await postJson(`${API_URL}/api/auth/login`, { email, password })
+
       localStorage.setItem('token', newToken)
       localStorage.setItem('user', JSON.stringify({ user_id, username }))
-      
+
       setToken(newToken)
       setUser({ user_id, username })
       setCurrentPage('dashboard')
@@ -61,12 +76,11 @@ function App() {
   const handleRegister = async (username, email, password) => {
     setLoading(true)
     try {
-      const res = await axios.post(`${API_URL}/api/auth/register`, { username, email, password })
-      const { token: newToken, user_id } = res.data
-      
+      const { token: newToken, user_id } = await postJson(`${API_URL}/api/auth/register`, { username, email, password })
+
       localStorage.setItem('token', newToken)
       localStorage.setItem('user', JSON.stringify({ user_id, username }))
-      
+
       setToken(newToken)
       setUser({ user_id, username })
       setCurrentPage('dashboard')
@@ -133,7 +147,7 @@ function App() {
         </div>
       </nav>
 
-      <div className={`content ${currentPage === 'dashboard' ? 'dashboard-content' : ''}`} ref={contentRef}>
+      <div className={`content ${currentPage === 'dashboard' ? 'dashboard-content' : ''}`}>
         {currentPage === 'dashboard' && (
           <Dashboard user={user} token={token} refreshKey={statsRefreshKey} onNavigate={navigateTo} />
         )}

@@ -199,9 +199,9 @@
 }
 
 .ghost-red { background: var(--accent-red); color: var(--accent-red); }
-.ghost-pink { background: var(--accent-red); color: var(--accent-red); }
-.ghost-cyan { background: var(--accent-green); color: var(--accent-green); }
-.ghost-orange { background: var(--accent-yellow); color: var(--accent-yellow); }
+.ghost-pink { background: #E84A8A; color: #E84A8A; }
+.ghost-cyan { background: #2BB7C4; color: #2BB7C4; }
+.ghost-orange { background: #F2A03D; color: #F2A03D; }
 
 .ghost-eye {
   position: absolute;

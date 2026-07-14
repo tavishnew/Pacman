@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import axios from 'axios'
 import './GameScreen.css'
 
 import { API_URL } from '../config'
@@ -531,11 +530,11 @@ function GameScreen({
     statsPostedRef.current = true
     const completionTime = (Date.now() - startTimeRef.current) / 1000
 
-    axios.post(
-      `${API_URL}/api/game/stats/update`,
-      { score, completion_time: completionTime },
-      { headers: { Authorization: `Bearer ${token}` } }
-    )
+    fetch(`${API_URL}/api/game/stats/update`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ score, completion_time: completionTime })
+    })
       .then(() => {
         if (typeof onGameEnd === 'function') {
           onGameEnd({ score, completion_time: completionTime, won: gameWon })
@@ -576,8 +575,6 @@ function GameScreen({
           data-ghost={ghost.id}
           data-x={ghost.x}
           data-y={ghost.y}
-          data-target-x={ghost.target?.x ?? pacmanPos.x}
-          data-target-y={ghost.target?.y ?? pacmanPos.y}
           style={{
             willChange: 'transform',
             backfaceVisibility: 'hidden'

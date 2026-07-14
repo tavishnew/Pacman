@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import axios from 'axios'
 import './Leaderboard.css'
 
 // Season end anchor for the live countdown (session-stable; swap for a real
@@ -16,6 +15,22 @@ function formatCountdown(ms) {
   return `${d}D ${String(h).padStart(2, '0')}H ${String(m).padStart(2, '0')}M ${String(s).padStart(2, '0')}S`
 }
 
+async function authedFetch(url, options = {}) {
+  const res = await fetch(url, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+  })
+  let data = null
+  try { data = await res.json() } catch { /* no body */ }
+  if (!res.ok) {
+    const error = new Error((data && data.error) || `Request failed (${res.status})`)
+    error.status = res.status
+    error.data = data
+    throw error
+  }
+  return data
+}
+
 function Leaderboard({ user, token, API_URL, onNavigate }) {
   const [globalLeaderboard, setGlobalLeaderboard] = useState([])
   const [friendsLeaderboard, setFriendsLeaderboard] = useState([])
@@ -26,19 +41,19 @@ function Leaderboard({ user, token, API_URL, onNavigate }) {
   const fetchLeaderboards = useCallback(async () => {
     setLoading(true)
     try {
-      const requests = [axios.get(`${API_URL}/api/game/leaderboard/global`)]
+      const requests = [authedFetch(`${API_URL}/api/game/leaderboard/global`)]
       const isAuthed = token && token !== 'guest-session'
       if (isAuthed) {
         requests.push(
-          axios.get(`${API_URL}/api/game/leaderboard/friends`, {
+          authedFetch(`${API_URL}/api/game/leaderboard/friends`, {
             headers: { Authorization: `Bearer ${token}` }
           })
         )
       }
 
-      const [globalRes, friendsRes] = await Promise.all(requests)
-      setGlobalLeaderboard(globalRes.data || [])
-      setFriendsLeaderboard(friendsRes ? friendsRes.data || [] : [])
+      const [globalData, friendsData] = await Promise.all(requests)
+      setGlobalLeaderboard(globalData || [])
+      setFriendsLeaderboard(friendsData || [])
     } catch (err) {
       console.error('Failed to fetch leaderboards:', err)
     }

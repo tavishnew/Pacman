@@ -1,9 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import axios from 'axios'
 import './FriendsList.css'
 
 const TILE_COLORS = ['var(--accent-yellow)', 'var(--accent-green)', 'var(--accent-red)', 'var(--ink)']
 const TILE_TEXT = ['var(--ink)', '#FAF7EE', '#FAF7EE', '#FAF7EE']
+
+async function authedFetch(url, options = {}) {
+  const res = await fetch(url, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+  })
+  let data = null
+  try { data = await res.json() } catch { /* no body */ }
+  if (!res.ok) {
+    const error = new Error((data && data.error) || `Request failed (${res.status})`)
+    error.status = res.status
+    error.data = data
+    throw error
+  }
+  return data
+}
 
 function FriendsList({ user, token, API_URL, onNavigate }) {
   const [friends, setFriends] = useState([])
@@ -13,14 +28,12 @@ function FriendsList({ user, token, API_URL, onNavigate }) {
   const [invitingFriendId, setInvitingFriendId] = useState(null)
   const [showRecruit, setShowRecruit] = useState(false)
 
-  const authHeaders = { headers: { Authorization: `Bearer ${token}` } }
+  const authHeaders = { Authorization: `Bearer ${token}` }
 
   const fetchFriends = useCallback(async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/social/friends`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      setFriends(res.data)
+      const data = await authedFetch(`${API_URL}/api/social/friends`, { headers: authHeaders })
+      setFriends(data || [])
     } catch (err) {
       console.error('Failed to fetch friends:', err)
     }
@@ -28,10 +41,8 @@ function FriendsList({ user, token, API_URL, onNavigate }) {
 
   const fetchInvites = useCallback(async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/social/invites`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      setInvites(res.data)
+      const data = await authedFetch(`${API_URL}/api/social/invites`, { headers: authHeaders })
+      setInvites(data || [])
     } catch (err) {
       console.error('Failed to fetch invites:', err)
     }
@@ -46,10 +57,13 @@ function FriendsList({ user, token, API_URL, onNavigate }) {
   const sendFriendInvite = async () => {
     if (!friendUsername.trim()) return
     try {
-      await axios.post(
+      await authedFetch(
         `${API_URL}/api/social/invite`,
-        { invitee_username: friendUsername.trim() },
-        authHeaders
+        {
+          method: 'POST',
+          headers: authHeaders,
+          body: JSON.stringify({ invitee_username: friendUsername.trim() })
+        }
       )
       alert(`Invite sent to ${friendUsername}.`)
       setFriendUsername('')
@@ -61,7 +75,7 @@ function FriendsList({ user, token, API_URL, onNavigate }) {
 
   const acceptInvite = async (inviteId) => {
     try {
-      await axios.post(`${API_URL}/api/social/invites/${inviteId}/accept`, {}, authHeaders)
+      await authedFetch(`${API_URL}/api/social/invites/${inviteId}/accept`, { method: 'POST', headers: authHeaders })
       fetchFriends()
       fetchInvites()
     } catch (err) {
@@ -73,14 +87,17 @@ function FriendsList({ user, token, API_URL, onNavigate }) {
     if (invitingFriendId) return
     setInvitingFriendId(friend.id)
     try {
-      const sessionRes = await axios.post(`${API_URL}/api/game/session/create`, {}, authHeaders)
-      const newSessionId = sessionRes.data?.session_id
+      const sessionRes = await authedFetch(`${API_URL}/api/game/session/create`, { method: 'POST', headers: authHeaders })
+      const newSessionId = sessionRes?.session_id
       if (!newSessionId) throw new Error('No session id returned')
 
-      await axios.post(
+      await authedFetch(
         `${API_URL}/api/social/invite`,
-        { invitee_username: friend.username, game_session_id: newSessionId },
-        authHeaders
+        {
+          method: 'POST',
+          headers: authHeaders,
+          body: JSON.stringify({ invitee_username: friend.username, game_session_id: newSessionId })
+        }
       )
 
       try {

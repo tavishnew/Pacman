@@ -1,7 +1,7 @@
 # 👾 Pac-Man Arcade — Multiplayer Edition
 
 A modern multiplayer Pac-Man game built with React, Node.js, WebSockets, and SQLite.  
-Features real-time gameplay, AI ghosts, leaderboards, social features, and a retro arcade-inspired UI.
+Features real-time gameplay, chasing ghosts, leaderboards, social features, and a retro arcade-inspired UI.
 
 ---
 
@@ -9,7 +9,7 @@ Features real-time gameplay, AI ghosts, leaderboards, social features, and a ret
 
 - Classic Pac-Man gameplay
 - Real-time multiplayer rooms using WebSockets
-- Smart ghost AI with unique behaviors
+- Ghosts with distinct pursuit behaviors
 - User authentication with guest play support
 - Global and friends leaderboards
 - Friends and invite system
@@ -105,7 +105,7 @@ http://localhost:3000
 
 ---
 
-# 🧠 Ghost AI
+# 🧠 Ghost Behavior
 
 | Ghost | Behavior |
 |--------|-----------|
