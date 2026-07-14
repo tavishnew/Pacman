@@ -1,252 +1,333 @@
 /* ============================================
-   LEADERBOARD (Brutalist)
+   LEADERBOARD (Brutalist Arcade — GLOBAL RANKINGS)
    ============================================ */
 
 .leaderboard {
-  padding: 0;
-}
-
-.leaderboard-header {
-  text-align: center;
-  margin-bottom: 28px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  min-height: 0;
 }
 
-.leaderboard-header h2 {
-  font-size: clamp(24px, 4vw, 32px);
-  color: var(--ink);
+/* ---- Header ---- */
+.lb-header {
   margin-bottom: 8px;
+}
+
+.lb-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.lb-title {
   font-family: var(--font-heading);
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-size: clamp(30px, 5vw, 56px);
+  line-height: 0.92;
   text-transform: uppercase;
+  letter-spacing: 0.01em;
+  margin: 0;
+  color: var(--ink);
   text-shadow: none;
   animation: clip-wipe 0.22s var(--ease-snap) backwards;
 }
 
-.leaderboard-header p {
-  color: var(--ink-soft);
-  font-size: 15px;
-  line-height: 1.5;
-  margin: 0;
+.lb-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
-.leaderboard-tabs {
+.lb-stats {
   display: flex;
-  justify-content: center;
-  margin-bottom: 22px;
-  gap: 8px;
+  gap: clamp(20px, 4vw, 48px);
+  margin-top: 14px;
+}
+
+.lb-stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+
+.lb-stat-value {
+  font-size: clamp(20px, 2.6vw, 28px);
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+
+.lb-stat-div {
+  padding-left: clamp(20px, 4vw, 48px);
+  border-left: 3px solid var(--ink);
+}
+
+.lb-rule {
+  border-top: 3px solid var(--ink);
+  margin: 20px 0 24px;
+}
+
+/* ---- Grid ---- */
+.lb-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+}
+
+@media (max-width: 940px) {
+  .lb-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Tabs ---- */
+.lb-tabs {
+  display: flex;
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-btn);
+  margin-bottom: 16px;
 }
 
 .tab-btn {
-  padding: 10px 22px;
-  min-height: 44px;
-  background: var(--paper);
-  border: 2px solid var(--ink);
-  color: var(--ink);
+  flex: 1;
+  padding: 11px;
+  background: var(--paper-raised);
+  border: 0;
+  border-right: 3px solid var(--ink);
   font-family: var(--font-mono);
-  cursor: pointer;
-  border-radius: 0;
-  transition: transform var(--dur-fast) var(--ease-snap),
-    box-shadow var(--dur-fast) var(--ease-snap),
-    background var(--dur-fast) var(--ease-snap),
-    color var(--dur-fast) var(--ease-snap);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 15px;
-  font-weight: 700;
-  box-shadow: var(--shadow-btn);
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-snap),
+    color var(--dur-fast) var(--ease-snap);
+}
+
+.tab-btn:last-child {
+  border-right: 0;
 }
 
 .tab-btn.active {
   background: var(--ink);
   color: var(--paper);
-  border-color: var(--ink);
-  box-shadow: var(--shadow-btn-active);
 }
 
-.tab-btn:hover:not(.active) {
-  background: var(--accent-yellow);
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-btn-hover);
-}
-
-.leaderboard-container {
-  background: var(--paper-raised);
+/* ---- Table ---- */
+.rank-table {
   border: 3px solid var(--ink);
-  border-radius: 0;
-  padding: 26px;
-  margin-bottom: 28px;
+  background: var(--paper-raised);
   box-shadow: var(--shadow-card);
-  position: relative;
   overflow: hidden;
 }
 
-.leaderboard-container::before,
-.leaderboard .stat-box::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: var(--accent-yellow);
-  pointer-events: none;
-}
-
-.leaderboard-content h3 {
-  color: var(--ink);
-  text-align: center;
-  margin-bottom: 22px;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  animation: clip-wipe 0.22s var(--ease-snap) backwards;
-}
-
-.no-data {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--ink-faint);
-  font-size: 15px;
-}
-
-.leaderboard-table {
-  width: 100%;
-}
-
-.table-header,
-.table-row {
+.rank-row {
   display: grid;
-  grid-template-columns: 80px 2fr 1fr 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: 70px 1fr 130px 90px 90px;
   align-items: center;
-}
-
-.table-header {
-  padding: 15px 12px;
-  border-bottom: 3px solid var(--ink);
-  margin-bottom: 4px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink);
-  font-size: 13px;
-  min-height: 48px;
-  font-family: var(--font-mono);
-}
-
-.table-row {
-  padding: 14px 12px;
-  min-height: 48px;
   border-bottom: 2px solid var(--ink);
-  transition: background var(--dur-fast) var(--ease-snap),
-    transform var(--dur-fast) var(--ease-snap);
-}
-
-.table-row:nth-child(odd) {
-  background: #ECE7D8;
-}
-
-.table-row:hover {
-  background: var(--accent-yellow);
-  transform: translate(-2px, -2px);
-}
-
-.table-row.current-user {
-  background: var(--accent-yellow);
-  border-bottom-color: var(--ink);
-}
-
-.table-row span {
-  display: flex;
-  align-items: center;
-  color: var(--ink);
-  font-size: 15px;
-  font-family: var(--font-mono);
-  overflow-wrap: break-word;
-}
-
-.table-row.current-user span {
-  color: var(--ink);
-  font-weight: 700;
-}
-
-.rank {
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.player-name {
-  font-weight: 700;
-  color: var(--ink) !important;
-}
-
-.score, .games, .time {
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-weight: 700;
   font-size: 14px;
 }
 
-.leaderboard-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 18px;
+.rank-row:last-child {
+  border-bottom: 0;
 }
 
-.leaderboard .stat-box {
-  background: var(--paper-raised);
-  border: 3px solid var(--ink);
-  padding: 22px;
-  text-align: center;
-  border-radius: 0;
-  box-shadow: var(--shadow-card);
-  position: relative;
-  overflow: hidden;
+.rank-head {
+  background: var(--ink);
+  color: var(--paper);
+  border-bottom: 3px solid var(--ink);
 }
 
-.leaderboard .stat-box h4 {
-  color: var(--ink-soft);
-  margin-bottom: 12px;
-  font-size: 13px;
-  font-family: var(--font-mono);
+.rank-head span {
+  padding: 12px 14px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-right: 1px solid rgba(250, 247, 238, 0.4);
+}
+
+.rank-head span:last-child {
+  border-right: 0;
+}
+
+.rank-row:not(.rank-head) span {
+  padding: 12px 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  border-right: 1px solid rgba(17, 17, 17, 0.18);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-row:not(.rank-head) span:last-child {
+  border-right: 0;
+}
+
+.player-cell {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.score-cell {
+  color: var(--ink);
+}
+
+.rank-row.current-user {
+  background: var(--accent-yellow);
+}
+
+.you-badge {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
-.leaderboard .stat-value {
-  font-size: clamp(20px, 3vw, 28px);
+.no-data {
+  padding: 28px 18px;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+/* ---- Sidebar ---- */
+.lb-side {
+  border: 3px solid var(--ink);
+  background: var(--accent-yellow);
+  padding: 22px;
+  box-shadow: var(--shadow-card);
+}
+
+.lb-side-head {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 3px solid var(--ink);
+  color: var(--ink);
+}
+
+.lb-side-block {
+  margin-bottom: 4px;
+}
+
+.lb-side-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(17, 17, 17, 0.7);
+  margin-bottom: 4px;
+}
+
+.lb-side-value {
+  font-size: clamp(28px, 4vw, 38px);
   font-weight: 700;
   color: var(--ink);
   font-family: var(--font-mono);
 }
 
-@media (max-width: 767px) {
-  .leaderboard-container {
-    padding: 16px;
+.lb-side-line {
+  border-top: 2px solid var(--ink);
+  margin: 14px 0;
+}
+
+.lb-progress {
+  width: 100%;
+  height: 16px;
+  background: var(--paper-raised);
+  border: 2px solid var(--ink);
+  margin-bottom: 6px;
+}
+
+.lb-progress-fill {
+  height: 100%;
+  background: var(--ink);
+  transition: width var(--dur-base) var(--ease-snap);
+}
+
+.lb-side-note {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.lb-find {
+  width: 100%;
+  margin: 4px 0 0;
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.lb-find:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.lb-breakdown {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 3px solid var(--ink);
+}
+
+.lb-breakdown-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.lb-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 5px 0;
+  color: var(--ink);
+}
+
+.lb-breakdown-val {
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 620px) {
+  .rank-row {
+    grid-template-columns: 50px 1fr 90px 64px;
   }
 
-  .table-header,
-  .table-row {
-    grid-template-columns: 50px 2fr 1fr 1fr;
-    gap: 8px;
-    padding: 12px 8px;
-  }
-
-  .table-header span:nth-child(5),
-  .table-row span:nth-child(5) {
+  .rank-head span:nth-child(5),
+  .rank-row:not(.rank-head) span:nth-child(5) {
     display: none;
   }
 
-  .leaderboard-stats {
-    grid-template-columns: 1fr;
-    gap: 12px;
+  .rank-head span {
+    font-size: 10px;
+    padding: 10px 8px;
+  }
+
+  .rank-row:not(.rank-head) span {
+    padding: 10px 8px;
+    font-size: 12px;
   }
 }

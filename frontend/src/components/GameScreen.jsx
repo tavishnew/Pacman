@@ -653,7 +653,7 @@ function GameScreen({
       {gameOver && (
         <div className="game-overlay game-over-overlay">
           <div className="game-message game-over-message">
-            <div className="game-over-icon">KO</div>
+            <div className="game-over-icon">HAHA!YOU LOST!</div>
             <h2 className="game-over-title">GAME OVER</h2>
             <div className="score-display">
               <span className="score-label">Final Score</span>

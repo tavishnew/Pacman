@@ -95,33 +95,43 @@ body::-webkit-scrollbar,
   justify-content: space-between;
   align-items: center;
   padding: 0 40px;
-  flex: 0 0 72px;
   height: 72px;
   background: var(--paper-raised);
   border-bottom: 3px solid var(--ink);
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  z-index: 110;
   overflow: hidden;
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
   transition:
-    transform var(--dur-base) var(--ease-snap),
-    opacity var(--dur-base) var(--ease-snap),
-    height var(--dur-base) var(--ease-snap),
-    flex-basis var(--dur-base) var(--ease-snap),
-    padding var(--dur-base) var(--ease-snap);
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.22s ease;
   will-change: transform;
 }
 
+/* Thin hover target along the top edge reveals the navbar */
+.nav-hover-zone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  z-index: 120;
+}
+
+.nav-hover-zone:hover + .navbar,
+.navbar:hover {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .navbar.hidden {
-  transform: translateY(-100%);
-  opacity: 0;
-  height: 0;
-  min-height: 0;
-  flex-basis: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  border-bottom-color: transparent;
-  pointer-events: none;
+  display: none;
 }
 
 .nav-left {
@@ -215,7 +225,7 @@ body::-webkit-scrollbar,
 }
 
 .content.dashboard-content {
-  overflow: hidden;
+  overflow-y: auto;
   padding-block: clamp(18px, 3vh, 30px);
 }
 
@@ -262,6 +272,38 @@ body::-webkit-scrollbar,
 .btn-green:hover {
   background: var(--accent-green);
   color: var(--paper);
+}
+
+/* Solid yellow primary (arcade signature) */
+.btn-yellow {
+  background: var(--accent-yellow);
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.btn-yellow:hover {
+  background: var(--accent-yellow);
+  color: var(--ink);
+}
+
+/* Small uppercase bordered tag used across arcade panels */
+.brutal-tag {
+  display: inline-block;
+  border: 2px solid var(--ink);
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 0;
+}
+
+.brutal-tag.on-dark {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
 }
 
 input[type="text"],

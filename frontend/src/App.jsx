@@ -14,10 +14,8 @@ function App() {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [isNavVisible, setIsNavVisible] = useState(true)
   const [isPlaying, setIsPlaying] = useState(false)
   const [statsRefreshKey, setStatsRefreshKey] = useState(0)
-  const lastScrollY = useRef(0)
   const contentRef = useRef(null)
 
   useEffect(() => {
@@ -30,33 +28,16 @@ function App() {
     }
   }, [])
 
-  // Auto-hide navbar on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = contentRef.current?.scrollTop || 0
-      if (currentScrollY > lastScrollY.current && currentScrollY > 60) {
-        setIsNavVisible(false)
-      } else {
-        setIsNavVisible(true)
-      }
-      lastScrollY.current = currentScrollY
+  // Pull the real reason out of an axios error so the user sees WHY a request
+  // failed (validation, duplicate username/email, rate limit, network, etc.)
+  const apiErrorMessage = (err, fallback) => {
+    const data = err?.response?.data
+    if (data && typeof data.error === 'string' && data.error) return data.error
+    if (err?.response?.status === 429) {
+      return 'Too many attempts. Please wait a few minutes and try again.'
     }
-
-    const contentArea = contentRef.current
-    if (contentArea) {
-      contentArea.addEventListener('scroll', handleScroll, { passive: true })
-      return () => contentArea.removeEventListener('scroll', handleScroll)
-    }
-  }, [token, currentPage]) // Re-run when content area might change
-
-  const authErrorMessage = (context) => {
-    if (context === 'login') {
-      return "We couldn't sign you in. Double-check your email and password, then try again."
-    }
-    if (context === 'register') {
-      return "We couldn't create your account. Check the form and try again."
-    }
-    return 'Something went wrong. Please try again.'
+    if (!err?.response) return 'Network error — is the server running on port 5000?'
+    return fallback || 'Something went wrong. Please try again.'
   }
 
   const handleLogin = async (email, password) => {
@@ -72,7 +53,7 @@ function App() {
       setUser({ user_id, username })
       setCurrentPage('dashboard')
     } catch (err) {
-      alert(authErrorMessage('login'))
+      alert(apiErrorMessage(err, "We couldn't sign you in. Double-check your email and password, then try again."))
     }
     setLoading(false)
   }
@@ -90,7 +71,7 @@ function App() {
       setUser({ user_id, username })
       setCurrentPage('dashboard')
     } catch (err) {
-      alert(authErrorMessage('register'))
+      alert(apiErrorMessage(err, "We couldn't create your account. Check the form and try again."))
     }
     setLoading(false)
   }
@@ -120,7 +101,6 @@ function App() {
   const navigateTo = (page) => {
     setCurrentPage(page)
     setIsPlaying(false) // Reset playing state when navigating
-    setIsNavVisible(true) // Ensure nav is visible on page change
   }
 
   if (!token) {
@@ -134,10 +114,11 @@ function App() {
     )
   }
 
-  const hideNavbar = isPlaying || !isNavVisible
+  const hideNavbar = isPlaying
 
   return (
     <div className={`app-container ${hideNavbar ? 'nav-hidden' : ''}`}>
+      <div className="nav-hover-zone" aria-hidden="true" />
       <nav className={`navbar ${hideNavbar ? 'hidden' : ''}`}>
         <div className="nav-left">
           <h1 className="logo">👾 PAC-MAN ARCADE</h1>
@@ -165,8 +146,8 @@ function App() {
             onGameEnd={() => setStatsRefreshKey(value => value + 1)}
           />
         )}
-        {currentPage === 'friends' && <FriendsList user={user} token={token} API_URL={API_URL} />}
-        {currentPage === 'leaderboard' && <Leaderboard user={user} token={token} API_URL={API_URL} />}
+        {currentPage === 'friends' && <FriendsList user={user} token={token} API_URL={API_URL} onNavigate={navigateTo} />}
+        {currentPage === 'leaderboard' && <Leaderboard user={user} token={token} API_URL={API_URL} onNavigate={navigateTo} />}
       </div>
     </div>
   )
